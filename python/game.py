@@ -64,7 +64,7 @@ class Game:
     # You must return a tuple (block index, # rotations, x, y)
     def find_move(self):
         self.turnCount += 1 # Our current turn count, starting from 0th
-        openingMovesList = [0, 1, 2] # Indexes of pieces for intial moves
+        openingMovesList = [] # Indexes of pieces for intial moves
         numOfOpeningTurns = len(openingMovesList)
         #dirs = [(1,1), (-1,1), (-1,-1), (1,-1)]
         moves = []
@@ -172,26 +172,46 @@ class Game:
         # move = index, rotations, x, y
         old_grid = copy.deepcopy(self.grid)
         self.make_move(move)
-        if turnNumber < 6:
+        
+        if turnNumber <3:
             areaWeight = -3
             blockCornerWeight = 5
             createCornerWeight = 2
             dogeCoinWeight = 5
+            middleWeight = 20
+        elif turnNumber < 15:
+            areaWeight = -3
+            blockCornerWeight = 5
+            createCornerWeight = 2
+            dogeCoinWeight = 5
+            middleWeight = 0
         else:
             areaWeight = -3
             blockCornerWeight = 3
             createCornerWeight = 4
             dogeCoinWeight = 5
+            middleWeight = 0
 
         area_weight_score = areaWeight*self.remainingPiecesArea(move[0])
         block_corner_score = blockCornerWeight*self.block_corner_score()
         create_corner_score = createCornerWeight*self.create_corner_score()
         doge_coin_score = dogeCoinWeight*self.dogecoin_score()
+        middle_weight_score = middleWeight*self.middle_weight_score()
 
-        score = area_weight_score + block_corner_score + create_corner_score + doge_coin_score
+        score = area_weight_score + block_corner_score + create_corner_score + doge_coin_score + middle_weight_score
         self.grid = old_grid
         return score
-
+        
+    def middle_weight_score(self):
+        player = self.my_number
+        min_dist = 1000000
+        for row in xrange(len(self.grid)):
+            for col in xrange(len(self.grid[0])):
+                if self.grid[row][col] == self.my_number:
+                    if abs(row-10)+abs(col-10) < min_dist:
+                        min_dist = abs(row-10)+abs(col-10)
+        return (-1)*min_dist
+    
     def block_corner_score(self):
         score = self.count_corners(False)
         return score
