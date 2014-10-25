@@ -51,7 +51,11 @@ class Game:
     def __init__(self, args):
         self.interpret_data(args)
         self.turnCount = -1
-        self.lastCorner = Point(0,0)
+        corners = [Point(0,0),
+                   Point(self.dimension-1, 0),
+                   Point(self.dimension-1, self.dimension-1),
+                   Point(0, self.dimension-1)]
+        self.lastCorner = corners[self.my_number]
 
     # find_move is your place to start. When it's your turn,
     # find_move will be called and you must return where to go.
@@ -60,38 +64,44 @@ class Game:
         self.turnCount += 1 # Our current turn count, starting from 0th
         openingMovesList = [0, 1, 2] # Indexes of pieces for intial moves
         numOfOpeningTurns = len(openingMovesList)
+        dirs = [(1,1), (-1,1), (-1,-1), (1,-1)]
         moves = []
         N = self.dimension
+        debug("lastCorner: %s" % str(self.lastCorner))
 
         if self.turnCount < numOfOpeningTurns:
-            block = self.blocks[self.turnCount]
-            index = self.turnCount
+            index = openingMovesList.pop(0)
+            block = self.blocks[index]
             for i in range(self.lastCorner.x*N + self.lastCorner.y, N * N):
                     x = i / N
                     y = i % N
+                    debug("current try: (%d, %d)" % (x,y))
 
                     for rotations in range(0, 4):
                         new_block = self.rotate_block(block, rotations)
                         if self.can_place(new_block, Point(x, y)):
-                            cornerOff = self.block_corner(new_block, (1,1))
+                            currDir = dirs[(self.my_number+rotations)%4]
+                            debug("currDir: %s" % str(currDir))
+                            cornerOff = self.block_corner(new_block, currDir)
                             self.lastCorner = self.lastCorner + cornerOff
+                            debug("move: %d, %d, %d, %d & lastCorner: %s" % (index, rotations, x, y, self.lastCorner))
                             return (index, rotations, x, y)
+
+        for index, block in enumerate(self.blocks):
+            for i in range(0, N * N):
+                x = i / N
+                y = i % N
+
+                for rotations in range(0, 4):
+                    new_block = self.rotate_block(block, rotations)
+                    if (self.can_place(new_block, Point(x, y))):
+                        move = index, rotations, x, y
+                        moves.append(move)
+
+        if len(moves) == 0:
+            return (0, 0, 0, 0)
         else:
-            for index, block in enumerate(self.blocks):
-                for i in range(0, N * N):
-                    x = i / N
-                    y = i % N
-
-                    for rotations in range(0, 4):
-                        new_block = self.rotate_block(block, rotations)
-                        if (self.can_place(new_block, Point(x, y))):
-                            move = index, rotations, x, y
-                            moves.append(move)
-
-            if len(moves) == 0:
-                return (0, 0, 0, 0)
-            else:
-                return self.best_move(moves)
+            return self.best_move(moves)
 
     # Checks if a block can be placed at the given point
     # modified: going to use this to check "value" of a move as well
@@ -162,6 +172,7 @@ class Game:
 
     # returns block corner in direction
     def block_corner(self, block, dir):
+        debug("blockPiece: %s" % block)
         maxPiece = Point(0, 0)
         maxScore = 0
         for piece in block:
@@ -169,6 +180,7 @@ class Game:
             if score > maxScore:
                 maxPiece = piece
                 maxScore = score
+        debug("blockCorner: %s" % str(maxPiece))
         return maxPiece + Point(1,1)
 
     # updates local variables with state from the server
