@@ -154,7 +154,22 @@ class Game:
         # move = index, rotations, x, y
         areaWeight = -1
         score = areaWeight*self.remainingPiecesArea(move[0])
+        blockCornerWeight = 1
+        score += blockCornerWeight*self.block_corner_score(move)
+        createCornerWeight = 1
+        score += createCornerWeight*self.create_corner_score(move)
+        dogeCoinWeight = 1
+        score += dogeCoinWeight*self.dogecoin_score(move)
         return score
+
+    def block_corner_score(self,move):
+        return 0
+
+    def create_corner_score(self,move):
+        return 0
+
+    def dogecoin_score(self,move):
+        return 0
 
     # rotates block 90deg counterclockwise
     def rotate_block(self, block, num_rotations):
