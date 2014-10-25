@@ -16,7 +16,8 @@ import json
 SOCKET_HOST = 'game.acmalgo.com'
 SOCKET_PORT = 8080
 
-team_id = ''
+# That's Deep Man
+team_id = 'dipm188'
 stdin_handle = None
 thread_handle = None
 is_fast = False
