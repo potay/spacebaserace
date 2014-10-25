@@ -47,24 +47,44 @@ class Game:
 
     def __init__(self, args):
         self.interpret_data(args)
+        self.turnCount = -1
+        self.lastCorner = Point(0,0)
 
     # find_move is your place to start. When it's your turn,
     # find_move will be called and you must return where to go.
     # You must return a tuple (block index, # rotations, x, y)
     def find_move(self):
+        self.turnCount += 1 # Our current turn count, starting from 0th
+        openingMovesList = [0, 1, 2] # Indexes of pieces for intial moves
+        numOfOpeningTurns = len(openingMovesList)
+
         moves = []
         N = self.dimension
-        for index, block in enumerate(self.blocks):
-            for i in range(0, N * N):
-                x = i / N
-                y = i % N
 
-                for rotations in range(0, 4):
-                    new_block = self.rotate_block(block, rotations)
-                    if self.can_place(new_block, Point(x, y)):
-                        return (index, rotations, x, y)
+        if self.turnCount < numOfOpeningTurns:
+            block = self.blocks[self.turnCount]
+            index = self.turnCount
+            for i in range(self.lastCorner.x*N + self.lastCorner.y, N * N):
+                    x = i / N
+                    y = i % N
 
-        return (0, 0, 0, 0)
+                    for rotations in range(0, 4):
+                        new_block = self.rotate_block(block, rotations)
+                        if self.can_place(new_block, Point(x, y)):
+                            cornerOff = self.block_corner(new_block, (1,1))
+                            self.lastCorner = self.lastCorner + cornerOff
+                            return (index, rotations, x, y)
+        else:
+            for index, block in enumerate(self.blocks):
+                for i in range(0, N * N):
+                    x = i / N
+                    y = i % N
+
+                    for rotations in range(0, 4):
+                        new_block = self.rotate_block(block, rotations)
+                        if self.can_place(new_block, Point(x, y)):
+                            return (index, rotations, x, y)
+            return (0, 0, 0, 0)
 
     # Checks if a block can be placed at the given point
     def can_place(self, block, point):
@@ -102,6 +122,17 @@ class Game:
     # rotates block 90deg counterclockwise
     def rotate_block(self, block, num_rotations):
         return [offset.rotate(num_rotations) for offset in block]
+
+    # returns block corner in direction
+    def block_corner(self, block, dir):
+        maxPiece = (0, 0)
+        maxScore = 0
+        for piece in block:
+            score = dir[0]*piece.x + dir[1]*piece.y
+            if score > maxScore:
+                maxPiece = piece
+                maxScore = score
+        return maxPiece + Point(1,1)
 
     # updates local variables with state from the server
     def interpret_data(self, args):
