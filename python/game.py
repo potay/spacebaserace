@@ -248,9 +248,10 @@ class Game:
         return maxPiece + Point(1,1)
 
     def rotateGrid(self):
-        debug("asdasdasd")
-        debug(self.grid)
-        debug("asdasdasdasdasdasd")
+        #debug("asdasdasd")
+        #debug(self.grid)
+        #debug("asdasdasdasdasdasd")
+        pass
         """
         for i in xrange(self.my_number):
             self.grid = zip(*self.grid[::-1])
