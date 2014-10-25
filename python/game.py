@@ -110,7 +110,7 @@ class Game:
         return True
 
     def best_move(self, moves):
-        return moves[0]
+        return moves[1]
 
     # rotates block 90deg counterclockwise
     def rotate_block(self, block, num_rotations):
