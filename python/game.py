@@ -50,31 +50,48 @@ class Game:
 
     def __init__(self, args):
         self.interpret_data(args)
-        
-        
+        self.turnCount = -1
+        self.lastCorner = Point(0,0)
+
     # find_move is your place to start. When it's your turn,
     # find_move will be called and you must return where to go.
     # You must return a tuple (block index, # rotations, x, y)
     def find_move(self):
-        # debug(self.grid)
-        # assert(False)
+        self.turnCount += 1 # Our current turn count, starting from 0th
+        openingMovesList = [0, 1, 2] # Indexes of pieces for intial moves
+        numOfOpeningTurns = len(openingMovesList)
         moves = []
         N = self.dimension
-        for index, block in enumerate(self.blocks):
-            for i in range(0, N * N):
-                x = i / N
-                y = i % N
 
-                for rotations in range(0, 4):
-                    new_block = self.rotate_block(block, rotations)
-                    if (self.can_place(new_block, Point(x, y))):
-                        move = index, rotations, x, y
-                        moves.append(move)
+        if self.turnCount < numOfOpeningTurns:
+            block = self.blocks[self.turnCount]
+            index = self.turnCount
+            for i in range(self.lastCorner.x*N + self.lastCorner.y, N * N):
+                    x = i / N
+                    y = i % N
 
-        if len(moves) == 0:
-            return (0, 0, 0, 0)
+                    for rotations in range(0, 4):
+                        new_block = self.rotate_block(block, rotations)
+                        if self.can_place(new_block, Point(x, y)):
+                            cornerOff = self.block_corner(new_block, (1,1))
+                            self.lastCorner = self.lastCorner + cornerOff
+                            return (index, rotations, x, y)
         else:
-            return self.best_move(moves)
+            for index, block in enumerate(self.blocks):
+                for i in range(0, N * N):
+                    x = i / N
+                    y = i % N
+
+                    for rotations in range(0, 4):
+                        new_block = self.rotate_block(block, rotations)
+                        if (self.can_place(new_block, Point(x, y))):
+                            move = index, rotations, x, y
+                            moves.append(move)
+
+            if len(moves) == 0:
+                return (0, 0, 0, 0)
+            else:
+                return self.best_move(moves)
 
     # Checks if a block can be placed at the given point
     # modified: going to use this to check "value" of a move as well
@@ -119,11 +136,11 @@ class Game:
                 max_score = score
                 max_move = move
         return max_move
-    
-    def pieceArea(self,piece): 
+
+    def pieceArea(self,piece):
         #should return area of a piece
         return len(piece)
-    
+
     def remainingPiecesArea(self,piece_index):
         #returns total area of a list of pieces
         area = 0
@@ -131,18 +148,28 @@ class Game:
             if i == piece_index: continue
             piece = self.blocks[i]
             area -= self.pieceArea(piece)
-        debug(area)
         return area
-    
+
     def move_score(self,move):
         # move = index, rotations, x, y
         areaWeight = 1
-        score = areaWeight*self.remainingPiecesArea(move[0])        
+        score = areaWeight*self.remainingPiecesArea(move[0])
         return score
 
     # rotates block 90deg counterclockwise
     def rotate_block(self, block, num_rotations):
         return [offset.rotate(num_rotations) for offset in block]
+
+    # returns block corner in direction
+    def block_corner(self, block, dir):
+        maxPiece = (0, 0)
+        maxScore = 0
+        for piece in block:
+            score = dir[0]*piece.x + dir[1]*piece.y
+            if score > maxScore:
+                maxPiece = piece
+                maxScore = score
+        return maxPiece + Point(1,1)
 
     # updates local variables with state from the server
     def interpret_data(self, args):
