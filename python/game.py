@@ -111,29 +111,33 @@ class Game:
         return True
 
     def best_move(self, moves):
-        max_score = 0
+        max_score = -100000000
         max_move = None
         for move in moves:
-            score = move_score(move)
+            score = self.move_score(move)
             if max_score < score:
                 max_score = score
                 max_move = move
         return max_move
     
-    def pieceArea(piece): 
+    def pieceArea(self,piece): 
         #should return area of a piece
         return len(piece)
     
-    def remainingPiecesArea(self):
+    def remainingPiecesArea(self,piece_index):
         #returns total area of a list of pieces
         area = 0
-        for piece in self.blocks:
-            area += self.pieceArea(piece)
+        for i in xrange(len(self.blocks)):
+            if i == piece_index: continue
+            piece = self.blocks[i]
+            area -= self.pieceArea(piece)
+        debug(area)
         return area
     
-    def move_score(move):
+    def move_score(self,move):
+        # move = index, rotations, x, y
         areaWeight = 1
-        score = areaWeight*self.remainingPiecesArea()        
+        score = areaWeight*self.remainingPiecesArea(move[0])        
         return score
 
     # rotates block 90deg counterclockwise
