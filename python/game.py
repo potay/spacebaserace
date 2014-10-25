@@ -50,7 +50,19 @@ class Game:
 
     def __init__(self, args):
         self.interpret_data(args)
-
+    
+    def pieceArea(piece): 
+        #should return area of a piece
+        return len(piece)
+    
+    def remainingPiecesArea(remainingPieces):
+        #returns total area of a list of pieces
+        area = 0
+        for piece in remainingPieces:
+            area += pieceArea(piece)
+        return area
+        
+        
     # find_move is your place to start. When it's your turn,
     # find_move will be called and you must return where to go.
     # You must return a tuple (block index, # rotations, x, y)
