@@ -104,8 +104,8 @@ class Game:
                 (x < N and y < N and self.grid[x + 1][y + 1] == self.my_number)
             )
 
-        if self.grid[corner.x][corner.y] < 0 and not onAbsCorner: return False
-        if not onAbsCorner and not onRelCorner: return False
+        if self.grid[corner.x][corner.y] < 0 and not onAbsCorner: return False, value
+        if not onAbsCorner and not onRelCorner: return False, value
 
         return True
 
