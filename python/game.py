@@ -50,25 +50,14 @@ class Game:
 
     def __init__(self, args):
         self.interpret_data(args)
-    
-    def pieceArea(piece): 
-        #should return area of a piece
-        return len(piece)
-    
-    def remainingPiecesArea(remainingPieces):
-        #returns total area of a list of pieces
-        area = 0
-        for piece in remainingPieces:
-            area += pieceArea(piece)
-        return area
         
         
     # find_move is your place to start. When it's your turn,
     # find_move will be called and you must return where to go.
     # You must return a tuple (block index, # rotations, x, y)
     def find_move(self):
-        debug(self.grid)
-        assert(False)
+        # debug(self.grid)
+        # assert(False)
         moves = []
         N = self.dimension
         for index, block in enumerate(self.blocks):
@@ -116,8 +105,8 @@ class Game:
                 (x < N and y < N and self.grid[x + 1][y + 1] == self.my_number)
             )
 
-        if self.grid[corner.x][corner.y] < 0 and not onAbsCorner: return False, value
-        if not onAbsCorner and not onRelCorner: return False, value
+        if self.grid[corner.x][corner.y] < 0 and not onAbsCorner: return False
+        if not onAbsCorner and not onRelCorner: return False
 
         return True
 
@@ -130,10 +119,22 @@ class Game:
                 max_score = score
                 max_move = move
         return max_move
-
+    
+    def pieceArea(piece): 
+        #should return area of a piece
+        return len(piece)
+    
+    def remainingPiecesArea(self):
+        #returns total area of a list of pieces
+        area = 0
+        for piece in self.blocks:
+            area += self.pieceArea(piece)
+        return area
+    
     def move_score(move):
-        # move = index, rotations, x, y
-        return 42
+        areaWeight = 1
+        score = areaWeight*self.remainingPiecesArea()        
+        return score
 
     # rotates block 90deg counterclockwise
     def rotate_block(self, block, num_rotations):
