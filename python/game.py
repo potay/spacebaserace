@@ -100,6 +100,8 @@ class Game:
                         moves.append(move)
 
         if len(moves) == 0:
+            debug("hi")
+            self.turnCount = -1
             return (0, 0, 0, 0)
         else:
             return self.best_move(moves)
@@ -173,12 +175,12 @@ class Game:
         old_grid = copy.deepcopy(self.grid)
         self.make_move(move)
         
-        if turnNumber < 3:
-            areaWeight = -3
+        if turnNumber < 4:
+            areaWeight = -5
             blockCornerWeight = 0
-            createCornerWeight = 2
-            dogeCoinWeight = 5
-            middleWeight = 10
+            createCornerWeight = 4
+            dogeCoinWeight = 9
+            middleWeight = 8
         elif turnNumber < 8:
             areaWeight = -2
             blockCornerWeight = 5
@@ -235,7 +237,7 @@ class Game:
     
     def block_corner_score(self):
         score = self.count_corners(False)
-        return score
+        return -1 * score
 
     def create_corner_score(self):
         score = self.count_corners(True)
