@@ -162,7 +162,7 @@ class Game:
 
     # returns block corner in direction
     def block_corner(self, block, dir):
-        maxPiece = (0, 0)
+        maxPiece = Point(0, 0)
         maxScore = 0
         for piece in block:
             score = dir[0]*piece.x + dir[1]*piece.y
