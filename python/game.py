@@ -27,6 +27,9 @@ class Point:
     def __eq__(self, point):
         return self.x == point.x and self.y == point.y
 
+    def __repr__(self):
+        return "(" + str(self.x) + ", " + str(self.y) + ")"
+
     # rotates 90deg counterclockwise
     def rotate(self, num_rotations):
         if num_rotations == 1: return Point(-self.y, self.x)
@@ -52,6 +55,7 @@ class Game:
     # find_move will be called and you must return where to go.
     # You must return a tuple (block index, # rotations, x, y)
     def find_move(self):
+        debug(self.blocks)
         moves = []
         N = self.dimension
         for index, block in enumerate(self.blocks):
