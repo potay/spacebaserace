@@ -43,6 +43,7 @@ class Point:
 
 class Game:
     blocks = []
+    old_blocks = 0
     grid = []
     bonus_squares = []
     my_number = -1
@@ -63,7 +64,12 @@ class Game:
     # find_move will be called and you must return where to go.
     # You must return a tuple (block index, # rotations, x, y)
     def find_move(self):
-        self.turnCount += 1 # Our current turn count, starting from 0th
+        #if self.old_blocks > len(self.blocks):
+        self.turnCount += 1
+            #self.old_blocks = len(self.blocks)
+        #else:
+        #\c    self.turnCount = 0 # Our current turn count, starting from 0th
+            #self.old_blocks = len(self.blocks)
         openingMovesList = [] # Indexes of pieces for intial moves
         numOfOpeningTurns = len(openingMovesList)
         #dirs = [(1,1), (-1,1), (-1,-1), (1,-1)]
@@ -100,8 +106,8 @@ class Game:
                         moves.append(move)
 
         if len(moves) == 0:
-            debug("hi")
-            self.turnCount = -1
+            #debug("hi")
+            #self.turnCount = -1
             return (0, 0, 0, 0)
         else:
             return self.best_move(moves)
@@ -316,7 +322,10 @@ class Game:
             self.turn = args['turn']
             self.grid = args['board']['grid']
             self.rotateGrid()
+            old_block_len = len(self.blocks)
             self.blocks = args['blocks'][self.my_number]
+            if len(self.blocks) > old_block_len:
+                self.turnCount = -1
             self.bonus_squares = args['board']['bonus_squares']
 
             for index, block in enumerate(self.blocks):
