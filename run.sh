@@ -8,7 +8,7 @@ RUN_AI="python python/game.py"
 # for CPP, uncomment this line:
 # RUN_AI="./cpp/game"
 
-TEAM_ID="test"
+TEAM_ID="thatsdeepman"
 FAST=0
 
 trap "pkill -P $$" SIGTERM SIGKILL EXIT
