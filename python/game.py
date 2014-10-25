@@ -67,8 +67,8 @@ class Game:
     # find_move will be called and you must return where to go.
     # You must return a tuple (block index, # rotations, x, y)
     def find_move(self):
-        # debug(self.grid)
-        # assert(False)
+        debug(self.grid)
+        assert(False)
         moves = []
         N = self.dimension
         for index, block in enumerate(self.blocks):
@@ -132,6 +132,7 @@ class Game:
         return max_move
 
     def move_score(move):
+        # move = index, rotations, x, y
         return 42
 
     # rotates block 90deg counterclockwise
