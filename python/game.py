@@ -147,12 +147,12 @@ class Game:
         for i in xrange(len(self.blocks)):
             if i == piece_index: continue
             piece = self.blocks[i]
-            area -= self.pieceArea(piece)
+            area += self.pieceArea(piece)
         return area
 
     def move_score(self,move):
         # move = index, rotations, x, y
-        areaWeight = 1
+        areaWeight = -1
         score = areaWeight*self.remainingPiecesArea(move[0])
         return score
 
