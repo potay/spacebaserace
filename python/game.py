@@ -122,7 +122,17 @@ class Game:
         return True
 
     def best_move(self, moves):
-        return moves[0]
+        max_score = 0
+        max_move = None
+        for move in moves:
+            score = move_score(move)
+            if max_score < score:
+                max_score = score
+                max_move = move
+        return max_move
+
+    def move_score(move):
+        return 42
 
     # rotates block 90deg counterclockwise
     def rotate_block(self, block, num_rotations):
