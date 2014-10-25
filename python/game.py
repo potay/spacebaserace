@@ -6,6 +6,7 @@
 
 import sys
 import json
+import copy
 
 # Simple point class that supports equality, addition, and rotations
 class Point:
@@ -157,6 +158,8 @@ class Game:
 
     def move_score(self,move):
         # move = index, rotations, x, y
+        old_grid = copy.deepcopy(self.grid)
+        self.make_move(move)
         areaWeight = -1
         score = areaWeight*self.remainingPiecesArea(move[0])
         blockCornerWeight = 1
@@ -171,18 +174,15 @@ class Game:
         debug(create_corner_score)
         dogeCoinWeight = 1
         score += dogeCoinWeight*self.dogecoin_score(move)
+        self.grid = old_grid
         return score
 
     def block_corner_score(self,move):
-        self.make_move(move)
         score = self.count_corners(False)
-        self.undo_move(move)
         return score
 
     def create_corner_score(self,move):
-        self.make_move(move)
         score = self.count_corners(True)
-        self.undo_move(move)
         return score
 
     def dogecoin_score(self,move):
@@ -195,12 +195,19 @@ class Game:
         for i in range(0, N * N):
             x = i / N
             y = i % N
-
             if (self.can_place(block, Point(x, y), me)):
                 result += 1
         return result
 
     def make_move(self,move):
+        # move = index, rotations, x, y
+        point = Point(move[2], move[3])
+        rotated_block = self.rotate_block(self.blocks[move[0]], move[1])
+        for offset in rotated_block:
+            p = point + offset
+            x = p.x
+            y = p.y
+            self.grid[x][y] = self.my_number
         return
 
     def undo_move(self,move):
