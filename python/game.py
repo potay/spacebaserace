@@ -48,6 +48,7 @@ class Game:
     my_number = -1
     dimension = -1 # Board is assumed to be square
     turn = -1
+    turnCount = -1
 
     def __init__(self, args):
         self.interpret_data(args)
