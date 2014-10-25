@@ -50,17 +50,6 @@ class Game:
 
     def __init__(self, args):
         self.interpret_data(args)
-    
-    def pieceArea(piece): 
-        #should return area of a piece
-        return len(piece)
-    
-    def remainingPiecesArea(remainingPieces):
-        #returns total area of a list of pieces
-        area = 0
-        for piece in remainingPieces:
-            area += pieceArea(piece)
-        return area
         
         
     # find_move is your place to start. When it's your turn,
@@ -130,9 +119,22 @@ class Game:
                 max_score = score
                 max_move = move
         return max_move
-
+    
+    def pieceArea(piece): 
+        #should return area of a piece
+        return len(piece)
+    
+    def remainingPiecesArea(self):
+        #returns total area of a list of pieces
+        area = 0
+        for piece in self.blocks:
+            area += self.pieceArea(piece)
+        return area
+    
     def move_score(move):
-        return 42
+        areaWeight = 1
+        score = areaWeight*self.remainingPiecesArea()        
+        return score
 
     # rotates block 90deg counterclockwise
     def rotate_block(self, block, num_rotations):
