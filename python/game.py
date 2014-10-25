@@ -179,24 +179,28 @@ class Game:
             createCornerWeight = 2
             dogeCoinWeight = 5
             middleWeight = 10
+            moveOutWeight = 0
         elif turnNumber < 8:
             areaWeight = -2
             blockCornerWeight = 5
             createCornerWeight = 7
             dogeCoinWeight = 20
             middleWeight = 0
+            moveOutWeight = 0
         elif turnNumber < 15:
             areaWeight = -2
             blockCornerWeight = 10
             createCornerWeight = 5
             dogeCoinWeight = 20
             middleWeight = 0
+            moveOutWeight = 0
         else:
             areaWeight = -1
             blockCornerWeight = 1
             createCornerWeight = 0
             dogeCoinWeight = 0
             middleWeight = 0
+            moveOutWeight = 0
 
         if areaWeight != 0:
             area_weight_score = areaWeight*self.remainingPiecesArea(move[0])
@@ -218,8 +222,12 @@ class Game:
             middle_weight_score = middleWeight*self.middle_weight_score()
         else:
             middle_weight_score = 0
+        if moveOutWeight != 0:
+            move_out_score = moveOutWeight*self.move_outwards_score()
+        else:
+            move_out_score = 0
 
-        score = area_weight_score + block_corner_score + create_corner_score + doge_coin_score + middle_weight_score
+        score = area_weight_score + block_corner_score + create_corner_score + doge_coin_score + middle_weight_score + move_out_score
         self.grid = old_grid
         return score
         
@@ -258,6 +266,29 @@ class Game:
             if (self.can_place(block, Point(x, y), me)):
                 result += 1
         return result
+
+    def move_outwards_score(self, move):
+        score = 0
+        point = Point(move[2], move[3])
+        rotated_block = self.rotate_block(self.blocks[move[0]], move[1])
+        for offset in rotated_block:
+            p = point + offset
+            x = p.x
+            y = p.y
+            if self.my_number == 0:
+                score += x
+                score += y
+            elif self.my_number == 1:
+                score += (19-x)
+                score += y
+            elif self.my_number == 2:
+                score += (19-x)
+                score += (19-x)
+            else:
+                score += x
+                score += (19-x)
+        return score
+
 
     def make_move(self,move):
         # move = index, rotations, x, y
