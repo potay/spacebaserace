@@ -66,19 +66,14 @@ class Game:
 
                 for rotations in range(0, 4):
                     new_block = self.rotate_block(block, rotations)
-                    good, value = self.can_place(new_block, Point(x, y))
-                    if good:
+                    if (self.can_place(new_block, Point(x, y))):
                         move = index, rotations, x, y
-                        moves.append((move, value))
+                        moves.append(move)
 
         if len(moves) == 0:
             return (0, 0, 0, 0)
         else:
-            best = (None, -1000)
-            for move, value in moves:
-                if value > best[1]:
-                    best = (move, value)
-            return best[0]
+            return self.best_move(moves)
 
     # Checks if a block can be placed at the given point
     # modified: going to use this to check "value" of a move as well
@@ -86,7 +81,6 @@ class Game:
         onAbsCorner = False
         onRelCorner = False
         N = self.dimension - 1
-        value = 0
 
         corners = [Point(0, 0), Point(N, 0), Point(N, N), Point(0, N)]
         corner = corners[self.my_number]
@@ -100,9 +94,7 @@ class Game:
                 (y > 0 and self.grid[x][y - 1] == self.my_number) or
                 (x < N and self.grid[x + 1][y] == self.my_number) or
                 (y < N and self.grid[x][y + 1] == self.my_number)
-            ): return False, value
-            if self.grid[x][y] == -2:
-                value += 10
+            ): return False
 
             onAbsCorner = onAbsCorner or (p == corner)
             onRelCorner = onRelCorner or (
@@ -115,7 +107,10 @@ class Game:
         if self.grid[corner.x][corner.y] < 0 and not onAbsCorner: return False
         if not onAbsCorner and not onRelCorner: return False
 
-        return True, value
+        return True
+
+    def best_move(self, moves):
+        return moves[0]
 
     # rotates block 90deg counterclockwise
     def rotate_block(self, block, num_rotations):
