@@ -165,15 +165,11 @@ class Game:
         blockCornerWeight = 1
         block_corner_score = self.block_corner_score(move)
         score += blockCornerWeight*block_corner_score
-        debug("YOUR CORNER SCORE")
-        debug(block_corner_score)
         createCornerWeight = 1
         create_corner_score = self.create_corner_score(move)
         score += createCornerWeight*create_corner_score
-        debug("MY CORNER SCORE")
-        debug(create_corner_score)
-        dogeCoinWeight = 1
-        score += dogeCoinWeight*self.dogecoin_score(move)
+        dogeCoinWeight = 10
+        score += dogeCoinWeight*self.dogecoin_score()
         self.grid = old_grid
         return score
 
@@ -185,13 +181,12 @@ class Game:
         score = self.count_corners(True)
         return score
 
-    def dogecoin_score(self,move):
-        (index, rotations, x, y) = move
-        for offset in self.blocks[index]:
-            (x2,y2) = (x+offset.x, y+offset.y)
-            if self.is_dodgecoin_square(x2,y2):
-                return 1
-        return 0
+    def dogecoin_score(self):
+        result = 0
+        for x,y in self.bonus_squares:
+            if self.grid[x][y] == self.my_number:
+                result +=1               
+        return result
 
     def count_corners(self, me):
         N = self.dimension
