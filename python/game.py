@@ -167,8 +167,16 @@ class Game:
 
     def create_corner_score(self,move):
         return 0
-
+    
+    def is_dodgecoin_square(self, x, y):
+        return (x,y) in self.bonus_squares
+        
     def dogecoin_score(self,move):
+        (index, rotations, x, y) = move
+        for offset in self.blocks[index]:
+            (x2,y2) = (x+offset.x, y+offset.y)
+            if self.is_dodgecoin_square(x2,y2):
+                return 1
         return 0
 
     # rotates block 90deg counterclockwise
