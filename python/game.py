@@ -163,21 +163,21 @@ class Game:
         areaWeight = -1
         score = areaWeight*self.remainingPiecesArea(move[0])
         blockCornerWeight = 1
-        block_corner_score = self.block_corner_score(move)
+        block_corner_score = self.block_corner_score()
         score += blockCornerWeight*block_corner_score
         createCornerWeight = 1
-        create_corner_score = self.create_corner_score(move)
+        create_corner_score = self.create_corner_score()
         score += createCornerWeight*create_corner_score
         dogeCoinWeight = 10
         score += dogeCoinWeight*self.dogecoin_score()
         self.grid = old_grid
         return score
 
-    def block_corner_score(self,move):
+    def block_corner_score(self):
         score = self.count_corners(False)
         return score
 
-    def create_corner_score(self,move):
+    def create_corner_score(self):
         score = self.count_corners(True)
         return score
 
