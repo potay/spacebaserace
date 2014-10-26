@@ -157,19 +157,27 @@ class Game:
         return area
 
     def move_score(self,move):
+        turnNumber = self.turnCount
         # move = index, rotations, x, y
         old_grid = copy.deepcopy(self.grid)
         self.make_move(move)
-        areaWeight = -1
-        score = areaWeight*self.remainingPiecesArea(move[0])
-        blockCornerWeight = 1
-        block_corner_score = self.block_corner_score()
-        score += blockCornerWeight*block_corner_score
-        createCornerWeight = 1
-        create_corner_score = self.create_corner_score()
-        score += createCornerWeight*create_corner_score
-        dogeCoinWeight = 10
-        score += dogeCoinWeight*self.dogecoin_score()
+        if turnNumber < 15:
+            areaWeight = -1
+            blockCornerWeight = 1
+            createCornerWeight = 1
+            dogeCoinWeight = 5
+        else:
+            areaWeight = -1
+            blockCornerWeight = 1
+            createCornerWeight = 1
+            dogeCoinWeight = 5
+        
+        area_weight_score = areaWeight*self.remainingPiecesArea(move[0])
+        block_corner_score = blockCornerWeight*self.block_corner_score()
+        create_corner_score = createCornerWeight*self.create_corner_score()
+        doge_coin_score = dogeCoinWeight*self.dogecoin_score()
+        
+        score = area_weight_score + block_corner_score + create_corner_score + doge_coin_score 
         self.grid = old_grid
         return score
 
