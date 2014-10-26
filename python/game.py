@@ -134,6 +134,7 @@ class Game:
         return True
 
     def best_move(self, moves):
+        debug(self.turnCount)
         max_score = -100000000
         max_move = None
         for move in moves:
@@ -161,15 +162,15 @@ class Game:
         # move = index, rotations, x, y
         old_grid = copy.deepcopy(self.grid)
         self.make_move(move)
-        if turnNumber < 15:
-            areaWeight = -1
-            blockCornerWeight = 1
-            createCornerWeight = 1
+        if turnNumber < 6:
+            areaWeight = -3
+            blockCornerWeight = 5
+            createCornerWeight = 2
             dogeCoinWeight = 5
         else:
-            areaWeight = -1
-            blockCornerWeight = 1
-            createCornerWeight = 1
+            areaWeight = -3
+            blockCornerWeight = 3
+            createCornerWeight = 4
             dogeCoinWeight = 5
         
         area_weight_score = areaWeight*self.remainingPiecesArea(move[0])
