@@ -6,6 +6,7 @@
 
 import sys
 import json
+import copy
 
 # Simple point class that supports equality, addition, and rotations
 class Point:
@@ -72,7 +73,7 @@ class Game:
 
                     for rotations in range(0, 4):
                         new_block = self.rotate_block(block, rotations)
-                        if self.can_place(new_block, Point(x, y)):
+                        if self.can_place(new_block, Point(x, y), True):
                             cornerOff = self.block_corner(new_block, (1,1))
                             self.lastCorner = self.lastCorner + cornerOff
                             return (index, rotations, x, y)
@@ -84,7 +85,7 @@ class Game:
 
                     for rotations in range(0, 4):
                         new_block = self.rotate_block(block, rotations)
-                        if (self.can_place(new_block, Point(x, y))):
+                        if (self.can_place(new_block, Point(x, y), True)):
                             move = index, rotations, x, y
                             moves.append(move)
 
@@ -95,10 +96,15 @@ class Game:
 
     # Checks if a block can be placed at the given point
     # modified: going to use this to check "value" of a move as well
-    def can_place(self, block, point):
+    def can_place(self, block, point, me):
         onAbsCorner = False
         onRelCorner = False
         N = self.dimension - 1
+        if me:
+            nums = [self.my_number]
+        else:
+            nums = [0,1,2,3]
+            nums.remove(self.my_number)
 
         corners = [Point(0, 0), Point(N, 0), Point(N, N), Point(0, N)]
         corner = corners[self.my_number]
@@ -108,18 +114,18 @@ class Game:
             x = p.x
             y = p.y
             if (x > N or x < 0 or y > N or y < 0 or self.grid[x][y] != -1 or
-                (x > 0 and self.grid[x - 1][y] == self.my_number) or
-                (y > 0 and self.grid[x][y - 1] == self.my_number) or
-                (x < N and self.grid[x + 1][y] == self.my_number) or
-                (y < N and self.grid[x][y + 1] == self.my_number)
+                (x > 0 and self.grid[x - 1][y] in nums) or
+                (y > 0 and self.grid[x][y - 1] in nums) or
+                (x < N and self.grid[x + 1][y] in nums) or
+                (y < N and self.grid[x][y + 1] in nums)
             ): return False
 
             onAbsCorner = onAbsCorner or (p == corner)
             onRelCorner = onRelCorner or (
-                (x > 0 and y > 0 and self.grid[x - 1][y - 1] == self.my_number) or
-                (x > 0 and y < N and self.grid[x - 1][y + 1] == self.my_number) or
-                (x < N and y > 0 and self.grid[x + 1][y - 1] == self.my_number) or
-                (x < N and y < N and self.grid[x + 1][y + 1] == self.my_number)
+                (x > 0 and y > 0 and self.grid[x - 1][y - 1] in nums) or
+                (x > 0 and y < N and self.grid[x - 1][y + 1] in nums) or
+                (x < N and y > 0 and self.grid[x + 1][y - 1] in nums) or
+                (x < N and y < N and self.grid[x + 1][y + 1] in nums)
             )
 
         if self.grid[corner.x][corner.y] < 0 and not onAbsCorner: return False
@@ -152,25 +158,33 @@ class Game:
 
     def move_score(self,move):
         # move = index, rotations, x, y
+        old_grid = copy.deepcopy(self.grid)
+        self.make_move(move)
         areaWeight = -1
         score = areaWeight*self.remainingPiecesArea(move[0])
         blockCornerWeight = 1
-        score += blockCornerWeight*self.block_corner_score(move)
+        block_corner_score = self.block_corner_score(move)
+        score += blockCornerWeight*block_corner_score
+        debug("YOUR CORNER SCORE")
+        debug(block_corner_score)
         createCornerWeight = 1
-        score += createCornerWeight*self.create_corner_score(move)
+        create_corner_score = self.create_corner_score(move)
+        score += createCornerWeight*create_corner_score
+        debug("MY CORNER SCORE")
+        debug(create_corner_score)
         dogeCoinWeight = 1
         score += dogeCoinWeight*self.dogecoin_score(move)
+        self.grid = old_grid
         return score
 
     def block_corner_score(self,move):
-        return 0
+        score = self.count_corners(False)
+        return score
 
     def create_corner_score(self,move):
-        return 0
-    
-    def is_dodgecoin_square(self, x, y):
-        return (x,y) in self.bonus_squares
-        
+        score = self.count_corners(True)
+        return score
+
     def dogecoin_score(self,move):
         (index, rotations, x, y) = move
         for offset in self.blocks[index]:
@@ -178,6 +192,31 @@ class Game:
             if self.is_dodgecoin_square(x2,y2):
                 return 1
         return 0
+
+    def count_corners(self, me):
+        N = self.dimension
+        block = [Point(0,0)]
+        result = 0
+        for i in range(0, N * N):
+            x = i / N
+            y = i % N
+            if (self.can_place(block, Point(x, y), me)):
+                result += 1
+        return result
+
+    def make_move(self,move):
+        # move = index, rotations, x, y
+        point = Point(move[2], move[3])
+        rotated_block = self.rotate_block(self.blocks[move[0]], move[1])
+        for offset in rotated_block:
+            p = point + offset
+            x = p.x
+            y = p.y
+            self.grid[x][y] = self.my_number
+        return
+
+    def undo_move(self,move):
+        return
 
     # rotates block 90deg counterclockwise
     def rotate_block(self, block, num_rotations):
